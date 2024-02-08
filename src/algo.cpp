@@ -11,7 +11,10 @@ struct Path{
     int col;
 };
 
-
+struct Reward{
+    vector<string> sequence; 
+    int prize; 
+};
 
 void printMatrix(vector<vector<int>> matrix){
 
@@ -73,34 +76,39 @@ void dfs(vector<vector<string>>& board, vector<Path> path, int curRow, int curCo
     path.pop_back();
 }
 
-void comparing(vector<vector<string>> base, vector<string> current){
-    int length = 0; 
+void comparing(vector<Reward> base, vector<string> current){
+    int length; 
+    int point = 0;
     for(int i = 0; i < base.size(); i++){
-        for(int k = 0; k < base[i].size(); k++){
+        length = 0;
+        for(int k = 0; k < base[i].sequence.size(); k++){
             for(int j = 0; j < current.size(); j++){
-                if(base[i][k] == current[j]){
+                if(base[i].sequence[k] == current[j]){
                     length++;
-                    cout << "ketemu: " << base[i][k] << endl;
-                    if(length == base[i].size()){
+                    cout << "ketemu: " << base[i].sequence[k] << endl;
+                    if(length == base[i].sequence.size()){
                         cout << "yey dapat point" << endl;
+                        point += base[i].prize;
                     }
                 }
             }
         }
     }
+    cout << point << endl;
     cout << length;
 }
 
 int main(){
 
-    vector<vector<string>> matrix; 
+    // vector<vector<string>> matrix; 
     vector<string> currentCombination = {"AP", "CD", "EF", "GH"};
 
+    vector<Reward> matrix;
     matrix = {
-        {"AD", "CD", "EF", "GH"}, 
-        {"5F", "6T", "GT", "6D"}, 
-        {"89", "OP", "PO", "DF"}, 
-        {"45", "7Y", "8U", "02"}
+        {{"AP", "CD", "EF", "GH"}, 100}, 
+        {{"CD", "EF"}, 20}, 
+        {{"89", "OP", "PO", "DF"}, 30}, 
+        {{"45", "7Y", "8U", "02"}, 25}
     };
 
     

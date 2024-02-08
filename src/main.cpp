@@ -100,14 +100,16 @@ vector<string> seqGenerator(int maksSequence, vector<string> token){
 }
 
 void comparing(vector<vector<string>> base, vector<string> current){
-    int length = 0; 
+    int length; 
     for(int i = 0; i < base.size(); i++){
+        length = 0;
         for(int k = 0; k < base[i].size(); k++){
             for(int j = 0; j < current.size(); j++){
                 if(base[i][k] == current[j]){
                     length++;
+                    cout << "ketemu: " << base[i][k] << endl;
                     if(length == base[i].size()){
-                        cout << "ketemu" << endl;
+                        cout << "yey dapat point" << endl;
                     }
                 }
             }
