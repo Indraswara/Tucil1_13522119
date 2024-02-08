@@ -7,6 +7,12 @@
 
 using namespace std; 
 
+
+struct Path{
+    int row; 
+    int col; 
+};
+
 int inputer(int awal, int akhir){
     string input; 
     while (true) {
@@ -93,44 +99,68 @@ vector<string> seqGenerator(int maksSequence, vector<string> token){
     return result;
 }
 
-void backtrack(vector<int>& matrix, vector<int>& currentPos, int sizeRow, int sizeCol, int currRow, int currCol, int buffer, bool isHorizontal) {
+void comparing(vector<vector<string>> base, vector<string> current){
+    int length = 0; 
+    for(int i = 0; i < base.size(); i++){
+        for(int k = 0; k < base[i].size(); k++){
+            for(int j = 0; j < current.size(); j++){
+                if(base[i][k] == current[j]){
+                    length++;
+                    if(length == base[i].size()){
+                        cout << "ketemu" << endl;
+                    }
+                }
+            }
+        }
+    }
+}
 
-    int currIndex = currRow * sizeCol + currCol;
-    currentPos.push_back(matrix[currIndex]);
+void dfs(vector<vector<string>>& board, vector<Path> path, vector<string> currentPos, int curRow, int curCol, int currDepth, int buffer, bool isHorizontal){
 
-    cout << "currRow: " << currRow << endl; 
-    cout << "currCol: " << currCol << endl;
-    for(int i = 0; i < currentPos.size(); i++) {
-        cout << currentPos[i] << " ";
+    if(curRow < 0 || curRow >= board.size() || curCol < 0 || curCol >= board[0].size()){
+        return;
+    }
+
+    for(int i = 0; i < path.size(); i++){
+        if(curRow == path[i].row && curCol == path[i].col){
+            return;
+        };
+    }
+
+    if(currDepth == buffer){
+        return;
+    }
+
+    // currentPos.push_back(board[path[curRow].row][path[curCol].col])
+    // if(currentPos.size() == buffer){
+    // }
+
+    path.push_back({curRow, curCol});
+
+    vector<string> base; 
+    for(int i = 0; i < path.size(); i++){
+        // cout << board[path[i].row][path[i].col] << " ";
+        base.push_back(board[path[i].row][path[i].col]);
+        cout << base[i] << endl;
+
     }
     cout << endl;
 
-    if(currRow < 0 || currRow >= sizeRow - 1 || currCol < 0 || currCol >= sizeCol - 1){
-
+    bool isExist;
+    if(isHorizontal){
+        for(int i = 1; i < board.size(); i++){
+            dfs(board, path, currentPos, curRow + i, curCol, currDepth + 1, buffer, false);
+            dfs(board, path, currentPos, curRow - i, curCol, currDepth + 1, buffer, false);
+        }
     }
     else{
-        if(currentPos.size() == buffer){
-            currentPos.pop_back();
-            if(isHorizontal){
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow - 1, currCol, buffer, true);
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow + 1, currCol, buffer, true);
-            }
-            else{
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow, currCol - 1, buffer, false);
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow, currCol + 1, buffer, false);
-            }
+        for(int i = 1; i < board[0].size();i++){
+            dfs(board, path, currentPos, curRow, curCol + i, currDepth + 1, buffer, true);
+            dfs(board, path, currentPos, curRow, curCol - i, currDepth + 1, buffer, true);
         }
-        else{
-            if(isHorizontal){
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow, currCol + 1, buffer, false);
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow, currCol - 1, buffer, false);
-            }
-            else{
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow + 1, currCol, buffer, true);
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow - 1, currCol, buffer, true);
-            }
-        }
+
     }
+    path.pop_back();
 }
 
 void cli(int jumlahTokenUnik, vector<string> token, int rowsMatriks, int colsMatriks, int jumlahSekuens, int maksSekuens){
