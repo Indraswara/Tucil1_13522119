@@ -4,8 +4,25 @@
 #include <vector> 
 #include <algorithm>
 #include <random>
+#include <chrono>
 
 using namespace std; 
+using namespace std::chrono;
+
+int maxPrize = 0;
+// int minMove = INT_MAX; 
+int checker = 0;
+
+struct Path{
+    int row; 
+    int col; 
+};
+
+
+struct Reward{
+    vector<string> sequence; 
+    int prize;
+};
 
 int inputer(int awal, int akhir){
     string input; 
@@ -93,44 +110,92 @@ vector<string> seqGenerator(int maksSequence, vector<string> token){
     return result;
 }
 
-void backtrack(vector<int>& matrix, vector<int>& currentPos, int sizeRow, int sizeCol, int currRow, int currCol, int buffer, bool isHorizontal) {
-
-    int currIndex = currRow * sizeCol + currCol;
-    currentPos.push_back(matrix[currIndex]);
-
-    cout << "currRow: " << currRow << endl; 
-    cout << "currCol: " << currCol << endl;
-    for(int i = 0; i < currentPos.size(); i++) {
-        cout << currentPos[i] << " ";
+void comparing(vector<Reward> Reward, vector<string> current){
+    int length; 
+    int point = 0;
+    for(int i = 0; i < Reward.size(); i++){
+        length = 0;
+        for(int j = 0; j < current.size(); j++){
+            for(int k = 0; k < Reward[i].sequence.size(); k++){
+                if(Reward[i].sequence[k] == current[j]){
+                    length++;
+                    j++;
+                    if(length == Reward[i].sequence.size()){
+                        point += Reward[i].prize;
+                    }
+                }
+            }
+        }
+        if(point > maxPrize){
+            maxPrize = point;
+        }
     }
-    cout << endl;
+}
 
-    if(currRow < 0 || currRow >= sizeRow - 1 || currCol < 0 || currCol >= sizeCol - 1){
+void comparing2(vector<string>& currentCombination, vector<Reward>& matrix) {
+    int point = 0; 
+    for (auto& reward : matrix) {
+        vector<string>& combination = reward.sequence;
 
+        auto it = search(currentCombination.begin(), currentCombination.end(), combination.begin(), combination.end());
+        if (it != currentCombination.end()) {
+            point += reward.prize;
+            if(point > maxPrize){
+                maxPrize = point;
+            }
+        }
+    }
+}
+
+void dfs(vector<vector<string>>& board, vector<Reward> base, vector<Path> path, vector<string> currentPos, int curRow, int curCol, int currDepth, int buffer, bool isHorizontal){
+    if(curRow < 0 || curRow >= board.size() || curCol < 0 || curCol >= board[0].size()){
+        return;
+    }
+
+    for(int i = 0; i < path.size(); i++){
+        if(curRow == path[i].row && curCol == path[i].col){
+            return;
+        };
+    }
+
+    path.push_back({curRow, curCol});
+    currentPos.push_back(board[curRow][curCol]);
+    if(currentPos.size() == buffer){
+        comparing2(currentPos, base);
+    }
+
+    if(currDepth == buffer){
+        return;
+    }
+
+
+
+    if(maxPrize == 50 && checker == 0){
+        for(int i = 0; i < path.size(); i++){
+            cout << currentPos[i] <<  " ";
+        }
+        for(int j = 0; j < path.size(); j++){
+            cout << "(" << path[j].col + 1 << "," << path[j].row + 1 << ")" << endl;
+        }
+        cout << endl;
+        checker = 1;
+    }
+
+    if(isHorizontal){
+        for(int i = 1; i < board.size(); i++){
+            dfs(board, base, path, currentPos, curRow + i, curCol, currDepth + 1, buffer, false);
+            dfs(board, base, path, currentPos, curRow - i, curCol, currDepth + 1, buffer, false);
+        }
     }
     else{
-        if(currentPos.size() == buffer){
-            currentPos.pop_back();
-            if(isHorizontal){
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow - 1, currCol, buffer, true);
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow + 1, currCol, buffer, true);
-            }
-            else{
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow, currCol - 1, buffer, false);
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow, currCol + 1, buffer, false);
-            }
-        }
-        else{
-            if(isHorizontal){
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow, currCol + 1, buffer, false);
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow, currCol - 1, buffer, false);
-            }
-            else{
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow + 1, currCol, buffer, true);
-                backtrack(matrix, currentPos, sizeRow, sizeCol, currRow - 1, currCol, buffer, true);
-            }
+        for(int i = 1; i < board[0].size();i++){
+            dfs(board, base, path, currentPos, curRow, curCol + i, currDepth + 1, buffer, true);
+            dfs(board, base, path, currentPos, curRow, curCol - i, currDepth + 1, buffer, true);
         }
     }
+    path.pop_back();
+    currentPos.pop_back();
+    
 }
 
 void cli(int jumlahTokenUnik, vector<string> token, int rowsMatriks, int colsMatriks, int jumlahSekuens, int maksSekuens){
@@ -141,66 +206,94 @@ void file(string filename){
 
 }
 
-int main(){
-    cout << "permainan" << endl; 
-    while(true){
-        int jumlahTokenUnik, buffer, rowsMatriks, colsMatriks, jumlahSekuens, maksSekuens; 
-        vector<string> token; 
-        cout << "1. cli" << endl; 
-        cout << "2. file" << endl; 
-        cout << "3. quit" << endl; 
-        int input = inputer(1, 3);
-        if(input == 1){
-            jumlahTokenUnik = inputInt("Masukkan jumlah token unik: "); 
-            buffer = inputInt("Masukkan jumlah buffer: ");
-            rowsMatriks = inputInt("Masukkan jumlah baris matriks: "); 
-            colsMatriks = inputInt("Masukkan jumlah kolom matriks: "); 
-            jumlahSekuens = inputInt("Masukkan total sekuens: "); 
-            maksSekuens = inputInt("Masukkan jumlah maksimum sekuens: ");
-            
-            for(int i = 0; i < jumlahTokenUnik; i++){
-                string seq; 
-                cin >> seq; 
-                token.push_back(seq);
-            }
 
-            // vector<vector<string>> boardGame = board(rowsMatriks, colsMatriks, token);
+int exe(){
+    int jumlahTokenUnik, buffer, rowsMatriks, colsMatriks, jumlahSekuens, maksSekuens; 
+    vector<string> token; 
 
+    buffer = 7; 
+    rowsMatriks = 6; 
+    colsMatriks = 6; 
+    vector<vector<string>> matriks = {
+        {"7A", "55", "E9", "E9", "1C", "55"},
+        {"55", "7A", "1C", "7A", "E9", "55"},
+        {"55", "1C", "1C", "55", "E9", "BD"},
+        {"BD", "1C", "7A", "1C", "55", "BD"},
+        {"BD", "55", "BD", "7A", "1C", "1C"},
+        {"1C", "55", "55", "7A", "55", "7A"}
+    };
+    jumlahSekuens = 3; 
+    vector<Reward> sequence = {
+        {{"BD", "E9", "1C"}, 15}, 
+        {{"BD", "7A", "BD"}, 20}, 
+        {{"BD", "1C", "BD", "55"}, 30}
+    };
 
-            // cout << jumlahTokenUnik << endl; 
-            // cout << buffer << endl;
-            // cout << rowsMatriks << endl; 
-            // cout << colsMatriks << endl; 
-            // cout << jumlahSekuens << endl; 
-            // cout << maksSekuens << endl;
-            // for(int i = 0; i < jumlahTokenUnik; i++){
-            //     cout << token[i] << " ";
-            // }
-            // for(int i = 0; i < boardGame.size(); i++){
-            //     for(int j = 0; j < boardGame[i].size(); j++){
-            //         cout << boardGame[i][j] << " ";
-            //     }
-            //     cout << endl;
-            // }
-
-            // for(int i =0 ; i < jumlahSekuens; i++){
-            //     vector<string> sequence; 
-            //     sequence = seqGenerator(maksSekuens, token);
-            //     for(int j = 0 ; j < sequence.size(); j++){
-            //         cout << sequence[j] << " ";
-            //     }
-            //     cout << endl;
-            // }
-
-
-        }
-        else if(input == 2){
-            cout << "file" << endl;
-        }
-        else{
-            break;
-        }
+    vector<string> currentPos; 
+    vector<Path> path;
+    for(int i = 0; i < colsMatriks; i++){
+        dfs(matriks, sequence, path, currentPos, 0, i, 0, buffer, true);
     }
+    cout << maxPrize << endl;
     return 0;
-
 }
+
+
+int main(){
+    auto start = high_resolution_clock::now();
+
+    exe();
+
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>(stop - start);
+
+    cout << "\nExecution Time: " << duration.count() << " milliseconds" << endl;
+    return 0;
+}
+
+// int main(){
+//     cout << "permainan" << endl; 
+//     while(true){
+//         int jumlahTokenUnik, buffer, rowsMatriks, colsMatriks, jumlahSekuens, maksSekuens; 
+//         vector<string> token; 
+//         cout << "1. cli" << endl; 
+//         cout << "2. file" << endl; 
+//         cout << "3. quit" << endl; 
+//         int input = inputer(1, 3);
+//         if(input == 1){
+//             jumlahTokenUnik = inputInt("Masukkan jumlah token unik: "); 
+//             buffer = inputInt("Masukkan jumlah buffer: ");
+//             rowsMatriks = inputInt("Masukkan jumlah baris matriks: "); 
+//             colsMatriks = inputInt("Masukkan jumlah kolom matriks: "); 
+//             jumlahSekuens = inputInt("Masukkan total sekuens: "); 
+//             maksSekuens = inputInt("Masukkan jumlah maksimum sekuens: ");
+            
+//             for(int i = 0; i < jumlahTokenUnik; i++){
+//                 string seq; 
+//                 cin >> seq; 
+//                 token.push_back(seq);
+//             }
+
+//             vector<vector<string>> boardGame = board(rowsMatriks, colsMatriks, token);
+
+//             for(int i =0 ; i < jumlahSekuens; i++){
+//                 vector<string> sequence; 
+//                 sequence = seqGenerator(maksSekuens, token);
+//                 for(int j = 0 ; j < sequence.size(); j++){
+//                     cout << sequence[j] << " ";
+//                 }
+//                 cout << endl;
+//             }
+
+
+//         }
+//         else if(input == 2){
+//             cout << "file" << endl;
+//         }
+//         else{
+//             break;
+//         }
+//     }
+//     return 0;
+
+// }
