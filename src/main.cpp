@@ -73,8 +73,8 @@ string random_string(int length){
         const size_t max_index = (sizeof(charset) - 1);
         return charset[ rand() % max_index ];
     };
-    std::string str(length,0);
-    std::generate_n( str.begin(), length, randchar );
+    string str(length,0);
+    generate_n( str.begin(), length, randchar );
     return str;
 }
 
@@ -169,6 +169,14 @@ void comparing2(vector<string>& currentCombination, vector<Reward>& matrix, vect
 }
 
 void dfs(vector<vector<string>>& board, vector<Reward> base, vector<Path> path, vector<string> currentPos, int curRow, int curCol, int currDepth, int buffer, bool isHorizontal){
+    int prizeTotal = 0;
+    for(int i = 0; i < base.size(); i++){
+        prizeTotal += base[i].prize;
+    }
+    if(prizeTotal == maxPrize){
+        return;
+    }
+
     if(curRow < 0 || curRow >= board.size() || curCol < 0 || curCol >= board[0].size()){
         return;
     }
@@ -182,12 +190,12 @@ void dfs(vector<vector<string>>& board, vector<Reward> base, vector<Path> path, 
     path.push_back({curRow, curCol});
     currentPos.push_back(board[curRow][curCol]);
     comparing2(currentPos, base, path, currDepth);
-    // if(currentPos.size() == buffer){
-    // }
 
     if(currDepth == buffer){
         return;
     }
+    // if(currentPos.size() == buffer){
+    // }
 
     //debug
     // if(maxPrize == 50 && checker == 0){
@@ -235,14 +243,14 @@ int test(){
     buffer = 7; 
     rowsMatriks = 6; 
     colsMatriks = 6; 
-    // vector<vector<string>> matriks = {
-    //     {"7A", "55", "E9", "E9", "1C", "55"},
-    //     {"55", "7A", "1C", "7A", "E9", "55"},
-    //     {"55", "1C", "1C", "55", "E9", "BD"},
-    //     {"BD", "1C", "7A", "1C", "55", "BD"},
-    //     {"BD", "55", "BD", "7A", "1C", "1C"},
-    //     {"1C", "55", "55", "7A", "55", "7A"}
-    // };
+    vector<vector<string>> matriks = {
+        {"7A", "55", "E9", "E9", "1C", "55"},
+        {"55", "7A", "1C", "7A", "E9", "55"},
+        {"55", "1C", "1C", "55", "E9", "BD"},
+        {"BD", "1C", "7A", "1C", "55", "BD"},
+        {"BD", "55", "BD", "7A", "1C", "1C"},
+        {"1C", "55", "55", "7A", "55", "7A"}
+    };
 
     vector<vector<string>> matriks2 = {
         {"AB", "56", "87", "AB", "FF", "FF"}, 
@@ -252,12 +260,12 @@ int test(){
         {"56", "56", "FF", "FF", "FF", "AB"},
         {"87", "C7", "FF", "56", "87", "AB"}
     };
-    // jumlahSekuens = 3; 
-    // vector<Reward> sequence = {
-    //     {{"BD", "E9", "1C"}, 15}, 
-    //     {{"BD", "7A", "BD"}, 20}, 
-    //     {{"BD", "1C", "BD", "55"}, 30}
-    // };
+    jumlahSekuens = 3; 
+    vector<Reward> sequence = {
+        {{"BD", "E9", "1C"}, 15}, 
+        {{"BD", "7A", "BD"}, 20}, 
+        {{"BD", "1C", "BD", "55"}, 30}
+    };
     jumlahSekuens = 5; 
     vector<Reward> sequence2 = {
         {{"56", "C7", "FF"}, 49},
@@ -299,90 +307,90 @@ int main(){
     return 0;
 }
 
-// int main(){
-//     cout << "Breach Protocol Game" << endl; 
-//     while(true){
-//         //reset global variable
-//         globalCurrPos.clear();
-//         globalPath.clear();
-//         finalePath.clear();
-//         maxPrize = INT_MIN; 
-//         minMove = INT_MAX;
+int main(){
+    cout << "Breach Protocol Game" << endl; 
+    while(true){
+        //reset global variable
+        globalCurrPos.clear();
+        globalPath.clear();
+        finalePath.clear();
+        maxPrize = INT_MIN; 
+        minMove = INT_MAX;
 
-//         int jumlahTokenUnik, buffer, rowsMatriks, colsMatriks, jumlahSekuens, maksSekuens; 
-//         vector<string> token; 
+        int jumlahTokenUnik, buffer, rowsMatriks, colsMatriks, jumlahSekuens, maksSekuens; 
+        vector<string> token; 
         
-//         cout << "1. cli" << endl; 
-//         cout << "2. file" << endl; 
-//         cout << "3. quit" << endl; 
-//         int input = inputer(1, 3);
-//         if(input == 1){
-//             jumlahTokenUnik = inputInt("Masukkan jumlah token unik: "); 
-//             buffer = inputInt("Masukkan jumlah buffer: ");
-//             rowsMatriks = inputInt("Masukkan jumlah baris matriks: "); 
-//             colsMatriks = inputInt("Masukkan jumlah kolom matriks: "); 
-//             jumlahSekuens = inputInt("Masukkan total sekuens: "); 
-//             maksSekuens = inputInt("Masukkan jumlah maksimum sekuens: ");
-//             cout << "Masukkan token: ";
-//             for(int i = 0; i < jumlahTokenUnik; i++){
-//                 string seq; 
-//                 cin >> seq; 
-//                 token.push_back(seq);
-//             }
+        cout << "1. cli" << endl; 
+        cout << "2. file" << endl; 
+        cout << "3. quit" << endl; 
+        int input = inputer(1, 3);
+        if(input == 1){
+            jumlahTokenUnik = inputInt("Masukkan jumlah token unik: "); 
+            buffer = inputInt("Masukkan jumlah buffer: ");
+            rowsMatriks = inputInt("Masukkan jumlah baris matriks: "); 
+            colsMatriks = inputInt("Masukkan jumlah kolom matriks: "); 
+            jumlahSekuens = inputInt("Masukkan total sekuens: "); 
+            maksSekuens = inputInt("Masukkan jumlah maksimum sekuens: ");
+            cout << "Masukkan token: ";
+            for(int i = 0; i < jumlahTokenUnik; i++){
+                string seq; 
+                cin >> seq; 
+                token.push_back(seq);
+            }
 
-//             // generate sequence reward and matriks board
-//             vector<vector<string>> boardGame = board(rowsMatriks, colsMatriks, token);
-//             vector<Reward> rewardSequence = seqGenerator(maksSekuens, token, jumlahSekuens);
+            // generate sequence reward and matriks board
+            vector<vector<string>> boardGame = board(rowsMatriks, colsMatriks, token);
+            vector<Reward> rewardSequence = seqGenerator(maksSekuens, token, jumlahSekuens);
 
-//             // reward debug
-//             for(int i = 0; i < rewardSequence.size(); i++){
-//                 cout << "{{";
-//                 for(int j = 0 ; j < rewardSequence[i].sequence.size(); j++){
-//                     cout << rewardSequence[i].sequence[j];
-//                     if(j != rewardSequence[i].sequence.size() - 1){
-//                         cout << ",";
-//                     }
-//                 }
-//                 cout << "}, ";
-//                 cout << rewardSequence[i].prize;
-//                 cout << "}";
-//                 cout << endl;
-//             }
+            // reward debug
+            for(int i = 0; i < rewardSequence.size(); i++){
+                cout << "{{";
+                for(int j = 0 ; j < rewardSequence[i].sequence.size(); j++){
+                    cout << rewardSequence[i].sequence[j];
+                    if(j != rewardSequence[i].sequence.size() - 1){
+                        cout << ",";
+                    }
+                }
+                cout << "}, ";
+                cout << rewardSequence[i].prize;
+                cout << "}";
+                cout << endl;
+            }
 
-//             auto start = high_resolution_clock::now();
-//             // main execution  
-//             vector<string> currentPos; 
-//             vector<Path> path;
-//             for(int i = 0; i < colsMatriks; i++){
-//                 dfs(boardGame, rewardSequence, path, currentPos, 0, i, 0, buffer, true);
-//             }
+            auto start = high_resolution_clock::now();
+            // main execution  
+            vector<string> currentPos; 
+            vector<Path> path;
+            for(int i = 0; i < colsMatriks; i++){
+                dfs(boardGame, rewardSequence, path, currentPos, 0, i, 0, buffer, true);
+            }
 
-//             // result 
-//             cout << "Result" << endl;
-//             for(int i = 0; i < finalePath.size(); i++){
-//                 cout << finalePath[i].finalToken << " "; 
-//             }       
-//             cout << endl;
-//             for(int i = 0; i < finalePath.size(); i++){
-//                 cout << "(" << finalePath[i].col + 1 << "," << finalePath[i].row + 1 << ")" << endl;
-//             }
-//             cout << "Optimum reward: " << endl;
-//             cout << "total prize: " <<  maxPrize << endl;
-//             cout << "minimum buffer taken: " << minMove + 1 << endl;
+            // result 
+            cout << "Result" << endl;
+            for(int i = 0; i < finalePath.size(); i++){
+                cout << finalePath[i].finalToken << " "; 
+            }       
+            cout << endl;
+            for(int i = 0; i < finalePath.size(); i++){
+                cout << "(" << finalePath[i].col + 1 << "," << finalePath[i].row + 1 << ")" << endl;
+            }
+            cout << "Optimum reward: " << endl;
+            cout << "total prize: " <<  maxPrize << endl;
+            cout << "minimum buffer taken: " << minMove + 1 << endl;
 
-//             auto stop = high_resolution_clock::now();
-//             auto duration = duration_cast<milliseconds>(stop - start);
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<milliseconds>(stop - start);
 
-//             cout << "\nExecution Time: " << duration.count() << " milliseconds" << endl;
+            cout << "\nExecution Time: " << duration.count() << " milliseconds" << endl;
             
-//         }
-//         else if(input == 2){
-//             cout << "file" << endl;
-//         }
-//         else{
-//             break;
-//         }
-//     }
-//     return 0;
+        }
+        else if(input == 2){
+            cout << "file" << endl;
+        }
+        else{
+            break;
+        }
+    }
+    return 0;
 
-// }
+}
