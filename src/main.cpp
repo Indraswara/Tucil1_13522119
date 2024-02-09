@@ -10,19 +10,28 @@ using namespace std;
 using namespace std::chrono;
 
 int maxPrize = 0;
-// int minMove = INT_MAX; 
 int checker = 0;
+int minMove = INT_MAX; 
 
 struct Path{
     int row; 
     int col; 
 };
 
-
 struct Reward{
     vector<string> sequence; 
     int prize;
 };
+
+struct PathVal{
+    int row; 
+    int col; 
+    string finalToken;
+};
+
+vector<Path> globalPath; 
+vector<string> globalCurrPos;
+vector<PathVal> finalePath;
 
 int inputer(int awal, int akhir){
     string input; 
@@ -132,7 +141,7 @@ void comparing(vector<Reward> Reward, vector<string> current){
     }
 }
 
-void comparing2(vector<string>& currentCombination, vector<Reward>& matrix) {
+void comparing2(vector<string>& currentCombination, vector<Reward>& matrix, vector<Path> path, int depth) {
     int point = 0; 
     for (auto& reward : matrix) {
         vector<string>& combination = reward.sequence;
@@ -140,8 +149,13 @@ void comparing2(vector<string>& currentCombination, vector<Reward>& matrix) {
         auto it = search(currentCombination.begin(), currentCombination.end(), combination.begin(), combination.end());
         if (it != currentCombination.end()) {
             point += reward.prize;
-            if(point > maxPrize){
+            if(point > maxPrize && depth <= minMove){
+                finalePath.clear();
                 maxPrize = point;
+                minMove = depth;
+                for(int i = 0; i < path.size(); i++){
+                    finalePath.push_back({path[i].row, path[i].col, currentCombination[i]});
+                }
             }
         }
     }
@@ -160,26 +174,25 @@ void dfs(vector<vector<string>>& board, vector<Reward> base, vector<Path> path, 
 
     path.push_back({curRow, curCol});
     currentPos.push_back(board[curRow][curCol]);
-    if(currentPos.size() == buffer){
-        comparing2(currentPos, base);
-    }
+    comparing2(currentPos, base, path, currDepth);
+    // if(currentPos.size() == buffer){
+    // }
 
     if(currDepth == buffer){
         return;
     }
 
-
-
-    if(maxPrize == 50 && checker == 0){
-        for(int i = 0; i < path.size(); i++){
-            cout << currentPos[i] <<  " ";
-        }
-        for(int j = 0; j < path.size(); j++){
-            cout << "(" << path[j].col + 1 << "," << path[j].row + 1 << ")" << endl;
-        }
-        cout << endl;
-        checker = 1;
-    }
+    //debug
+    // if(maxPrize == 50 && checker == 0){
+    //     for(int i = 0; i < path.size(); i++){
+    //         cout << currentPos[i] <<  " ";
+    //     }
+    //     for(int j = 0; j < path.size(); j++){
+    //         cout << "(" << path[j].col + 1 << "," << path[j].row + 1 << ")" << endl;
+    //     }
+    //     cout << endl;
+    //     checker = 1;
+    // }
 
     if(isHorizontal){
         for(int i = 1; i < board.size(); i++){
@@ -193,6 +206,7 @@ void dfs(vector<vector<string>>& board, vector<Reward> base, vector<Path> path, 
             dfs(board, base, path, currentPos, curRow, curCol - i, currDepth + 1, buffer, true);
         }
     }
+
     path.pop_back();
     currentPos.pop_back();
     
@@ -235,6 +249,7 @@ int exe(){
         dfs(matriks, sequence, path, currentPos, 0, i, 0, buffer, true);
     }
     cout << maxPrize << endl;
+    cout << minMove << endl;
     return 0;
 }
 
@@ -243,6 +258,14 @@ int main(){
     auto start = high_resolution_clock::now();
 
     exe();
+
+    for(int i = 0; i < finalePath.size(); i++){
+        cout << finalePath[i].finalToken << " "; 
+    }
+    cout << endl; 
+    for(int i = 0; i < finalePath.size(); i++){
+        cout << "(" << finalePath[i].col + 1 << "," << finalePath[i].row + 1 << ")" << endl;
+    }
 
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
