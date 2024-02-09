@@ -81,10 +81,11 @@ void comparing(vector<Reward> base, vector<string> current){
     int point = 0;
     for(int i = 0; i < base.size(); i++){
         length = 0;
-        for(int k = 0; k < base[i].sequence.size(); k++){
-            for(int j = 0; j < current.size(); j++){
+        for(int j = 0; j < current.size(); j++){
+            for(int k = 0; k < base[i].sequence.size(); k++){
                 if(base[i].sequence[k] == current[j]){
                     length++;
+                    j++;
                     cout << "ketemu: " << base[i].sequence[k] << endl;
                     if(length == base[i].sequence.size()){
                         cout << "yey dapat point" << endl;
@@ -98,21 +99,34 @@ void comparing(vector<Reward> base, vector<string> current){
     cout << length;
 }
 
+void compare2(const std::vector<std::string>& currentCombination, const std::vector<Reward>& matrix) {
+    for (const auto& reward : matrix) {
+        const std::vector<std::string>& combination = reward.sequence;
+
+        // Check if combination is present in currentCombination
+        auto it = std::search(currentCombination.begin(), currentCombination.end(), combination.begin(), combination.end());
+
+        if (it != currentCombination.end()) {
+            // Combination found, print the reward
+            std::cout << "Combination found! Reward: " << reward.prize << std::endl;
+        }
+    }
+}
+
 int main(){
 
     // vector<vector<string>> matrix; 
-    vector<string> currentCombination = {"AP", "CD", "EF", "GH"};
+    vector<string> currentCombination = {"7A", "BD", "7A", "BD", "1C", "BD", "55"};
 
     vector<Reward> matrix;
     matrix = {
-        {{"AP", "CD", "EF", "GH"}, 100}, 
-        {{"CD", "EF"}, 20}, 
-        {{"89", "OP", "PO", "DF"}, 30}, 
-        {{"45", "7Y", "8U", "02"}, 25}
+       {{"BD", "E9", "1C"}, 15}, 
+        {{"BD", "7A", "BD"}, 20}, 
+        {{"BD", "1C", "BD", "55"}, 30}
     };
 
     
-    comparing(matrix, currentCombination);
+    compare2(currentCombination, matrix);
     // for(int i = 0; i < matrix[0].size(); i++){
     //     dfs(matrix, path, 0, i, 0, 10, true);
     // }
