@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <random>
 #include <chrono>
+#include <fstream>
 
 using namespace std; 
 using namespace std::chrono;
@@ -148,7 +149,7 @@ void comparing(vector<Reward> Reward, vector<string> current){
     }
 }
 
-void comparing2(vector<string>& currentCombination, vector<Reward>& matrix, vector<Path> path, int depth) {
+void comparing2(vector<string>& currentCombination, vector<Reward>& matrix, vector<Path> path) {
     int point = 0; 
     for (auto& reward : matrix) {
         vector<string>& combination = reward.sequence;
@@ -156,10 +157,10 @@ void comparing2(vector<string>& currentCombination, vector<Reward>& matrix, vect
         auto it = search(currentCombination.begin(), currentCombination.end(), combination.begin(), combination.end());
         if (it != currentCombination.end()) {
             point += reward.prize;
-            if(point > maxPrize && depth < minMove){
+            if(point > maxPrize){
                 finalePath.clear();
                 maxPrize = point;
-                minMove = depth;
+                // minMove = depth;
                 for(int i = 0; i < path.size(); i++){
                     finalePath.push_back({path[i].row, path[i].col, currentCombination[i]});
                 }
@@ -169,14 +170,15 @@ void comparing2(vector<string>& currentCombination, vector<Reward>& matrix, vect
 }
 
 void dfs(vector<vector<string>>& board, vector<Reward> base, vector<Path> path, vector<string> currentPos, int curRow, int curCol, int currDepth, int buffer, bool isHorizontal){
-    int prizeTotal = 0;
-    for(int i = 0; i < base.size(); i++){
-        prizeTotal += base[i].prize;
-    }
-    if(prizeTotal == maxPrize){
-        return;
-    }
-
+    // int prizeTotal = 0;
+    // for(int i = 0; i < base.size(); i++){
+    //     prizeTotal += base[i].prize;
+    // }
+    // if(prizeTotal == maxPrize){
+    //     return;
+    // }
+    // cout << board.size(); 
+    // cout << board[0].size();
     if(curRow < 0 || curRow >= board.size() || curCol < 0 || curCol >= board[0].size()){
         return;
     }
@@ -189,7 +191,7 @@ void dfs(vector<vector<string>>& board, vector<Reward> base, vector<Path> path, 
 
     path.push_back({curRow, curCol});
     currentPos.push_back(board[curRow][curCol]);
-    comparing2(currentPos, base, path, currDepth);
+    comparing2(currentPos, base, path);
 
     if(currDepth == buffer){
         return;
@@ -278,7 +280,7 @@ int test(){
     vector<string> currentPos; 
     vector<Path> path;
     for(int i = 0; i < colsMatriks; i++){
-        dfs(matriks2, sequence2, path, currentPos, 0, i, 0, buffer, true);
+        dfs(matriks, sequence, path, currentPos, 0, i, 0, buffer, true);
     }
     cout << "maxprize: " << maxPrize << endl;
     cout << "minimal move: " << minMove << endl;
@@ -287,7 +289,7 @@ int test(){
 
 
 
-int main(){
+int debug(){
     auto start = high_resolution_clock::now();
 
     test();
@@ -376,7 +378,7 @@ int main(){
             }
             cout << "Optimum reward: " << endl;
             cout << "total prize: " <<  maxPrize << endl;
-            cout << "minimum buffer taken: " << minMove + 1 << endl;
+            // cout << "minimum buffer taken: " << minMove + 1 << endl;
 
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<milliseconds>(stop - start);
@@ -385,7 +387,84 @@ int main(){
             
         }
         else if(input == 2){
-            cout << "file" << endl;
+            vector<vector<string>> matriks;
+            string line; 
+            vector<string> lines;
+            fstream myData;
+            myData.open("data.txt"); 
+
+            if(myData.is_open()){
+                while(getline(myData, line)){
+                    lines.push_back(line);
+                }
+
+            }
+
+            myData.close();
+
+            buffer = stoi(lines[0]); 
+            rowsMatriks = lines[1][0] - '0';
+            colsMatriks = lines[1][2] - '0';
+
+            string myStr;
+            vector<string> temp; 
+
+            for(int i = 2; i <= rowsMatriks + 1; i++){
+                temp.clear();
+                for(int j = 0; j < lines[i].size(); j++){
+                        if(lines[i][j] != ' '){
+                            myStr.push_back(lines[i][j]);
+                        }
+                        if(lines[i][j] == ' ' || j == lines[i].size() - 1){
+                            temp.push_back(myStr);
+                            myStr.clear();
+                        }
+                }
+                matriks.push_back(temp);
+            }
+
+            jumlahSekuens = stoi(lines[rowsMatriks + 2]);
+            vector<Reward> rewardSequence; 
+            for(int f = rowsMatriks + 3; f < lines.size(); f++){
+                //ini reward
+                Reward tempReward; 
+                temp.clear();
+                myStr.clear();
+                //ini sequence
+                for(int j = 0; j < lines[f].size(); j++){
+                    if(lines[f][j] != ' '){
+                        myStr.push_back(lines[f][j]);
+                    }
+                    if(lines[f][j] == ' ' || j == lines[f].size() - 1){
+                        temp.push_back(myStr);
+                        myStr.clear();
+                    }
+                }
+                tempReward.sequence = temp;
+
+                f += 1; 
+                tempReward.prize = stoi(lines[f]); 
+                rewardSequence.push_back(tempReward);
+            }
+
+            // main execution  
+            vector<string> currentPos; 
+            vector<Path> path;
+            for(int i = 0; i < colsMatriks; i++){
+                dfs(matriks, rewardSequence, path, currentPos, 0, i, 0, buffer, true);
+            }
+            // result 
+            cout << "Result" << endl;
+            for(int i = 0; i < finalePath.size(); i++){
+                cout << finalePath[i].finalToken << " "; 
+            }       
+            cout << endl;
+            for(int i = 0; i < finalePath.size(); i++){
+                cout << "(" << finalePath[i].col + 1 << "," << finalePath[i].row + 1 << ")" << endl;
+            }
+            cout << "Optimum reward: " << endl;
+            cout << "total prize: " <<  maxPrize << endl;
+            // cout << "minimum buffer taken: " << minMove + 1 << endl;
         }
         else{
             break;
