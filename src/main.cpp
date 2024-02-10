@@ -10,8 +10,7 @@
 using namespace std; 
 using namespace std::chrono;
 
-int maxPrize = 0;
-int checker = 0;
+int maxPrize = INT_MIN;
 int minMove = INT_MAX; 
 
 struct Path{
@@ -195,6 +194,43 @@ void dfs(vector<vector<string>>& board, vector<Reward> base, vector<Path> path, 
     currentPos.pop_back();
 }
 
+void file(string filename, auto duration){
+    filename += ".txt";
+    cout << filename << endl;
+    fstream savingData; 
+    savingData.open(filename, ios::out);
+    
+    savingData << maxPrize << endl;
+    for(int i =0; i < finalePath.size(); i++){
+        savingData << finalePath[i].finalToken << " ";
+    }
+    savingData << "\n";
+    for(int i = 0; i < finalePath.size(); i++){
+        savingData << "(" << finalePath[i].col << "," << finalePath[i].row << ")" << "\n";
+    }
+    
+    savingData << "\n";
+    savingData << duration << " ms";
+    savingData.close();
+}
+
+void saving(auto duration){
+    cout << "simpan hasil dalam bentuk file? (y/n) ";
+    char choose; 
+    cin >> choose;
+    while(choose != 'y' && choose && 'n' && choose != 'Y' && choose != 'N'){
+        cout << "input invalid, masukkan ulang" << endl;
+        cout << ">> "; 
+        cin >> choose; 
+    }
+    if(choose == 'y' || choose == 'Y'){
+        cout << "Masukkan nama file: "; 
+        string filename; 
+        cin >> filename; 
+        file(filename, duration);
+    }
+}
+
 int main(){
     cout << "Breach Protocol Game" << endl; 
     while(true){
@@ -270,14 +306,14 @@ int main(){
             auto duration = duration_cast<milliseconds>(stop - start);
 
             cout << "\nExecution Time: " << duration.count() << " milliseconds" << endl;
-            
+            saving(duration.count());
         }
         else if(input == 2){
             vector<vector<string>> matriks;
             string line; 
             vector<string> lines;
             fstream myData;
-            myData.open("data2.txt"); 
+            myData.open("data3.txt"); 
 
             if(myData.is_open()){
                 while(getline(myData, line)){
@@ -354,7 +390,9 @@ int main(){
 
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<milliseconds>(stop - start);
+
             cout << "\nExecution Time: " << duration.count() << " milliseconds" << endl;
+            saving(duration.count());
         }
         else{
             break;
