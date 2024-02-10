@@ -33,7 +33,6 @@ void printMatrix(vector<vector<int>> matrix){
         }
     }
     cout << "]";
-
 }
 
 void dfs(vector<vector<string>>& board, vector<Path> path, int curRow, int curCol, int currDepth, int buffer, bool isHorizontal){
@@ -53,7 +52,7 @@ void dfs(vector<vector<string>>& board, vector<Path> path, int curRow, int curCo
     }
 
     path.push_back({curRow, curCol});
-
+    
     for(int i = 0; i < path.size(); i++){
         cout << board[path[i].row][path[i].col] << " ";
     }
