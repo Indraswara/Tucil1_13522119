@@ -7,6 +7,7 @@
 #include <chrono>
 #include <fstream>
 #include <climits>
+#include <sys/stat.h>
 
 using namespace std; 
 using namespace std::chrono;
@@ -33,6 +34,11 @@ struct PathVal{
 vector<Path> globalPath; 
 vector<string> globalCurrPos;
 vector<PathVal> finalePath;
+
+bool isExist(string name){
+    struct stat buffer;
+    return (stat(name.c_str(), &buffer) == 0);
+}
 
 int inputer(int awal, int akhir){
     string input; 
@@ -234,50 +240,6 @@ void saving(auto duration){
     }
 }
 
-int test(){
-    int jumlahTokenUnik, buffer, rowsMatriks, colsMatriks, jumlahSekuens, maksSekuens; 
-    vector<string> token; 
-
-    buffer = 7; 
-    rowsMatriks = 6; 
-    colsMatriks = 6; 
-    vector<vector<string>> matriks = {
-        {"7A", "55", "E9", "E9", "1C", "55"},
-        {"55", "7A", "1C", "7A", "E9", "55"},
-        {"55", "1C", "1C", "55", "E9", "BD"},
-        {"BD", "1C", "7A", "1C", "55", "BD"},
-        {"BD", "55", "BD", "7A", "1C", "1C"},
-        {"1C", "55", "55", "7A", "55", "7A"}
-    };
-
-    vector<vector<string>> matriks1 = {
-    {"69", "42", "00", "69", "00", "EF"},
-    {"BE", "AD", "BE", "AD", "EF", "42"},
-    {"42", "42", "DE", "69", "EF", "AD"},
-    {"BE", "69", "DE", "BE", "AD", "42"},
-    {"BE", "42", "EF", "BE", "BE", "DE"},
-    {"00", "00", "00", "EF", "00", "BE"}
-    };
-
-
-    jumlahSekuens = 4; 
-    vector<Reward> sequence = {
-        {{"AD", "69", "42", "69", "BE"}, 17}, 
-        {{"69", "AD", "DE", "AD"}, 100}, 
-        {{"42", "AD", "00"}, 97},
-        {{"DE", "EF", "AD", "00", "42"}, 3}
-    };
-
-    vector<string> currentPos; 
-    vector<Path> path;
-    for(int i = 0; i < colsMatriks; i++){
-        dfs(matriks1, sequence, path, currentPos, 0, i, 0, buffer, true);
-    }
-    // cout << maxPrize << endl;
-    // cout << minMove << endl;
-    return 0;
-}
-
 int main(){
     cout << "Breach Protocol Game" << endl; 
     while(true){
@@ -359,9 +321,25 @@ int main(){
         else if(input == 2){
             vector<vector<string>> matriks;
             string line; 
+            string filePath = "test/";
+            string fileName;
             vector<string> lines;
             fstream myData;
-            myData.open("bin/data3.txt"); 
+            
+            cout << "Pastikan file ada di dalam folder test" << endl;
+            cout << "Masukkan nama file: "; 
+            cin >> fileName; 
+            filePath += fileName; 
+            cout << filePath << endl;
+            while(!isExist(filePath)){
+                cout << "file tidak ada di folder test" << endl; 
+                cout << "Masukkan nama file: "; 
+                cin >> fileName; 
+                filePath = "test/"; 
+                filePath += fileName;
+            }
+
+            myData.open(filePath); 
             if(myData.is_open()){
                 while(getline(myData, line)){
                     lines.push_back(line);
@@ -420,44 +398,7 @@ int main(){
                 rewardSequence.push_back(tempReward);
             }
             
-            //debug 
-
-            // cout << buffer << endl; 
-            // cout << rowsMatriks << " " << colsMatriks << endl; 
-            // cout << jumlahSekuens << endl; 
-
-            // for(int i = 0; i < matriks.size(); i++){
-            //     cout << " ";
-            //     for(int j = 0; j < matriks[i].size(); j++){
-            //         cout << matriks[i][j] << " "; 
-            //     }
-            //     cout << endl;
-            // }
-            // // cout << matriks[0][4] << endl;
-            // cout << "matriks size: " << matriks[0][4].size() << endl;
-
-            // cout << matriks[0][5].size() << endl;
-            // cout << matriks[1][5].size() << endl;
-            // cout << matriks[1][1].size() << endl;
-            // cout << matriks[5][1].size() << endl;
-
-
-            
-
-            // cout << "Sequence: " << endl;
-            // for(int i = 0; i < rewardSequence.size(); i++){
-            //     cout << "prize: "<< rewardSequence[i].prize << endl; 
-            //     cout << "sequence length: " << rewardSequence[i].sequence.size() << endl;
-            //     cout << "sequence: ";
-            //     for(int j = 0; j < rewardSequence[i].sequence.size(); j++){
-            //         cout << rewardSequence[i].sequence[j] << " ";
-            //     }
-            //     cout << endl;
-            // }
-            // cout << endl;
-            
-
-
+       
             // main execution  
             auto start = high_resolution_clock::now();
             vector<string> currentPos; 
@@ -490,12 +431,4 @@ int main(){
         }
     }
     return 0;
-}
-
-int bruh(){
-    test(); 
-    cout << "Optimum reward: " << endl;
-    cout << "total prize: " <<  maxPrize << endl;
-    cout << "minimum buffer taken: " << minMove << endl;
-
 }
