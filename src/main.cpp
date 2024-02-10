@@ -209,7 +209,7 @@ void file(string filename, auto duration){
     }
     savingData << "\n";
     for(int i = 0; i < finalePath.size(); i++){
-        savingData << "(" << finalePath[i].col << "," << finalePath[i].row << ")" << "\n";
+        savingData << "(" << finalePath[i].col + 1 << "," << finalePath[i].row + 1 << ")" << "\n";
     }
     
     savingData << "\n";
@@ -232,6 +232,50 @@ void saving(auto duration){
         cin >> filename; 
         file(filename, duration);
     }
+}
+
+int test(){
+    int jumlahTokenUnik, buffer, rowsMatriks, colsMatriks, jumlahSekuens, maksSekuens; 
+    vector<string> token; 
+
+    buffer = 7; 
+    rowsMatriks = 6; 
+    colsMatriks = 6; 
+    vector<vector<string>> matriks = {
+        {"7A", "55", "E9", "E9", "1C", "55"},
+        {"55", "7A", "1C", "7A", "E9", "55"},
+        {"55", "1C", "1C", "55", "E9", "BD"},
+        {"BD", "1C", "7A", "1C", "55", "BD"},
+        {"BD", "55", "BD", "7A", "1C", "1C"},
+        {"1C", "55", "55", "7A", "55", "7A"}
+    };
+
+    vector<vector<string>> matriks1 = {
+    {"69", "42", "00", "69", "00", "EF"},
+    {"BE", "AD", "BE", "AD", "EF", "42"},
+    {"42", "42", "DE", "69", "EF", "AD"},
+    {"BE", "69", "DE", "BE", "AD", "42"},
+    {"BE", "42", "EF", "BE", "BE", "DE"},
+    {"00", "00", "00", "EF", "00", "BE"}
+    };
+
+
+    jumlahSekuens = 4; 
+    vector<Reward> sequence = {
+        {{"AD", "69", "42", "69", "BE"}, 17}, 
+        {{"69", "AD", "DE", "AD"}, 100}, 
+        {{"42", "AD", "00"}, 97},
+        {{"DE", "EF", "AD", "00", "42"}, 3}
+    };
+
+    vector<string> currentPos; 
+    vector<Path> path;
+    for(int i = 0; i < colsMatriks; i++){
+        dfs(matriks1, sequence, path, currentPos, 0, i, 0, buffer, true);
+    }
+    // cout << maxPrize << endl;
+    // cout << minMove << endl;
+    return 0;
 }
 
 int main(){
@@ -336,6 +380,9 @@ int main(){
                 for(int j = 0; j < lines[i].size(); j++){
                         if(lines[i][j] != ' '){
                             myStr.push_back(lines[i][j]);
+                            if(myStr.back() == '\r'){
+                                myStr.pop_back();
+                            }
                         }
                         if(lines[i][j] == ' ' || j == lines[i].size() - 1){
                             temp.push_back(myStr);
@@ -345,12 +392,6 @@ int main(){
                 }
                 matriks.push_back(temp);
             }
-            for(int i = 0; i < rowsMatriks; i++){
-                for(int j = 0; j < colsMatriks; j++){
-                    cout << matriks[i][j] << " ";
-                }
-                cout << endl;
-            }
 
             jumlahSekuens = stoi(lines[rowsMatriks + 2]);
 
@@ -359,11 +400,13 @@ int main(){
                 //ini reward
                 Reward tempReward; 
                 temp.clear();
-                myStr.clear();
                 //ini sequence
                 for(int j = 0; j < lines[f].size(); j++){
                     if(lines[f][j] != ' '){
                         myStr.push_back(lines[f][j]);
+                        if(myStr.back() == '\r'){
+                            myStr.pop_back();
+                        }
                     }
                     if(lines[f][j] == ' ' || j == lines[f].size() - 1){
                         temp.push_back(myStr);
@@ -376,17 +419,47 @@ int main(){
                 tempReward.prize = stoi(lines[f]); 
                 rewardSequence.push_back(tempReward);
             }
-            // cout << rewardSequence[0].sequence.size() << endl;
-            // cout << matriks[0][0] << endl;
-            // for(int j = 0; j < rewardSequence[0].sequence.size(); j++){
-            //     cout << rewardSequence[0].sequence[j] << " ";
+            
+            //debug 
+
+            // cout << buffer << endl; 
+            // cout << rowsMatriks << " " << colsMatriks << endl; 
+            // cout << jumlahSekuens << endl; 
+
+            // for(int i = 0; i < matriks.size(); i++){
+            //     cout << " ";
+            //     for(int j = 0; j < matriks[i].size(); j++){
+            //         cout << matriks[i][j] << " "; 
+            //     }
+            //     cout << endl;
+            // }
+            // // cout << matriks[0][4] << endl;
+            // cout << "matriks size: " << matriks[0][4].size() << endl;
+
+            // cout << matriks[0][5].size() << endl;
+            // cout << matriks[1][5].size() << endl;
+            // cout << matriks[1][1].size() << endl;
+            // cout << matriks[5][1].size() << endl;
+
+
+            
+
+            // cout << "Sequence: " << endl;
+            // for(int i = 0; i < rewardSequence.size(); i++){
+            //     cout << "prize: "<< rewardSequence[i].prize << endl; 
+            //     cout << "sequence length: " << rewardSequence[i].sequence.size() << endl;
+            //     cout << "sequence: ";
+            //     for(int j = 0; j < rewardSequence[i].sequence.size(); j++){
+            //         cout << rewardSequence[i].sequence[j] << " ";
+            //     }
+            //     cout << endl;
             // }
             // cout << endl;
-            // cout << rewardSequence[0].sequence[0] << endl;
-            // cout << rewardSequence[0].prize << endl;
+            
 
-            auto start = high_resolution_clock::now();
+
             // main execution  
+            auto start = high_resolution_clock::now();
             vector<string> currentPos; 
             vector<Path> path;
             for(int i = 0; i < colsMatriks; i++){
@@ -394,6 +467,7 @@ int main(){
             }
             // result 
             cout << "Result" << endl;
+            // cout << "finale path: " << finalePath.size() << endl;
             for(int i = 0; i < finalePath.size(); i++){
                 cout << finalePath[i].finalToken << " "; 
             }       
@@ -416,4 +490,12 @@ int main(){
         }
     }
     return 0;
+}
+
+int bruh(){
+    test(); 
+    cout << "Optimum reward: " << endl;
+    cout << "total prize: " <<  maxPrize << endl;
+    cout << "minimum buffer taken: " << minMove << endl;
+
 }
