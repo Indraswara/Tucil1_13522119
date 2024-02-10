@@ -205,7 +205,6 @@ void dfs(vector<vector<string>>& board, vector<Reward> base, vector<Path> path, 
 
 void file(string filename, auto duration){
     filename += ".txt";
-    cout << filename << endl;
     fstream savingData; 
     savingData.open(filename, ios::out);
     
@@ -224,6 +223,8 @@ void file(string filename, auto duration){
 }
 
 void saving(auto duration){
+    string fileName; 
+    string filePath;
     cout << "simpan hasil dalam bentuk file? (y/n) ";
     char choose; 
     cin >> choose;
@@ -234,16 +235,95 @@ void saving(auto duration){
     }
     if(choose == 'y' || choose == 'Y'){
         cout << "Masukkan nama file: "; 
-        string filename; 
-        cin >> filename; 
-        file(filename, duration);
+        filePath = "./test/"; 
+        cin >> fileName; 
+        filePath += fileName;
+        file(filePath, duration);
+        cout << fileName << " telah tersimpan di folder test" << endl;
+    }
+}
+
+void isFound(auto duration){
+    if(maxPrize == INT_MIN){
+        maxPrize = 0;
+    }
+    if(minMove == INT_MAX){
+        minMove = 0;
+    }
+    if(finalePath.size() != 0){
+            cout << " _______   ______    __    __  .__   __.  _______  " << endl
+        << "|   ____| /  __  \\  |  |  |  | |  \\ |  | |       \\ " << endl
+        << "|  |__   |  |  |  | |  |  |  | |   \\|  | |  .--.  |" << endl
+        << "|   __|  |  |  |  | |  |  |  | |  . `  | |  |  |  |" << endl
+        << "|  |     |  `--'  | |  `--'  | |  |\\   | |  '--'  |" << endl
+        << "|__|      \\______/   \\______/  |__| \\__| |_______/ " << endl;
+
+        cout << "Result" << endl;
+        for(int i = 0; i < finalePath.size(); i++){
+            cout << finalePath[i].finalToken << " "; 
+        }       
+        cout << endl;
+        for(int i = 0; i < finalePath.size(); i++){
+            cout << "(" << finalePath[i].col + 1 << "," << finalePath[i].row + 1 << ")" << endl;
+        }
+    }
+    else{
+        cout << " _____   ______           _____   _________________                      " << endl
+        << "|\\    \\ |\\     \\     ____|\\    \\ /                 \\                     " << endl
+        << "\\ \\    \\| \\     \\   /     /\\    \\\\______     ______/                     " << endl
+        << " \\|    \\  \\     | /     /  \\    \\  \\( /    /  )/                        " << endl
+        << "  |     \\ |    ||     |    |    |  ' |   |   '                         " << endl
+        << "  |      \\|    ||\\     \\  /    /|   /   //                             " << endl
+        << "  |    |\\ \\    || \\_____\\/____/ |  /___//                              " << endl
+        << "  |____||\\_____/|  \\ |    ||    | / |`   |                              " << endl
+        << "  |    |/ \\|   ||   \\|____||____|/  |____|                              " << endl
+        << "    \\(       )/       \\(    )/       \\(                               " << endl
+        << "     '       '         '    '         '                               " << endl
+        << "                                                                        " << endl
+        << "                                                                        " << endl
+        << "  _____         _____     ____   ____  _____   ______        _____     " << endl
+        << " ____|\\    \\   ____|\\    \\   |    | |    ||\\    \\ |\\     \\   ___|\\    \\" << endl
+        << "|    | \\    \\ /     /\\    \\  |    | |    | \\ \\    \\| \\     \\ |    | \\    \\" <<endl
+        << "|    |______//     /  \\    \\ |    | |    |  \\|    \\  \\     ||    | |    |" << endl
+        << "|    |----'\\|     |    |    ||    | |    |   |     \\  |    ||    | |    |" << endl
+        << "|    |_____/|     |    |    ||    | |    |   |      \\ |    ||    | |    |" << endl
+        << "|    |      |\\     \\  /    /||    | |    |   |    |\\ \\|    ||    | |    |" << endl
+        << "|____|      | \\_____\\/____/ ||\\___\\_|____|   |____||\\_____/||____|/____/|" << endl
+        << "|    |       \\ |    ||    | /| |    |    |   |    |/ \\|   |||    /    | |" << endl
+        << "|____|        \\|____||____|/  \\|____|____|   |____|   |___|/|____|____|/ " << endl
+        << "  )/             \\(    )/        \\(   )/       \\(       )/    \\(    )/   " << endl
+        << "  '               '    '          '   '         '       '      '    '    " << endl;
+
+    }
+    cout << "Optimum reward: " << endl;
+    cout << "total prize: " <<  maxPrize << endl;
+    cout  << "minimum buffer taken: " << minMove << endl;
+
+    cout << "\nExecution Time: " << duration.count() << " milliseconds" << endl;
+    if(!finalePath.empty()){
+        saving(duration.count());
     }
 }
 
 int main(){
-    cout << "Breach Protocol Game" << endl; 
+    cout<< "                __                        " << endl
+        << " _      _____  / /________  ____ ___  ___ " << endl
+        << "| | /| / / _ \\/ / ___/ __ \\/ __ `__ \\/ _ \\" << endl
+        << "| |/ |/ /  __/ / /__/ /_/ / / / / / /  __/" << endl
+        << "|__/|__/\\___/_/\\___/\\____/_/ /_/ /_/\\___/ " << endl;
+
     while(true){
+        cout << "    ____                       __           " << endl
+              << "   / __ )________  ____ ______/ /_          " << endl
+              << "  / __  / ___/ _ \\/ __ `/ ___/ __ \\         " << endl
+              << " / /_/ / /  /  __/ /_/ / /__/ / / /         " << endl
+              << "/_____/_/   \\___/\\__,_/\\___/_/ /_/      __" << endl
+              << "   / __ \\_________  / /_____  _________  / /" << endl
+              << "  / /_/ / ___/ __ \\/ __/ __ \\/ ___/ __ \\/ / " << endl
+              << " / ____/ /  / /_/ / /_/ /_/ / /__/ /_/ / /  " << endl
+              << "/_/   /_/   \\____/\\__/\\____/\\___/\\____/_/   " << endl;
         //reset global variable
+        cout << "choose input method: " << endl;
         globalCurrPos.clear();
         globalPath.clear();
         finalePath.clear();
@@ -297,25 +377,11 @@ int main(){
             for(int i = 0; i < colsMatriks; i++){
                 dfs(boardGame, rewardSequence, path, currentPos, 0, i, 0, buffer, true);
             }
-
-            // result 
-            cout << "Result" << endl;
-            for(int i = 0; i < finalePath.size(); i++){
-                cout << finalePath[i].finalToken << " "; 
-            }       
-            cout << endl;
-            for(int i = 0; i < finalePath.size(); i++){
-                cout << "(" << finalePath[i].col + 1 << "," << finalePath[i].row + 1 << ")" << endl;
-            }
-            cout << "Optimum reward: " << endl;
-            cout << "total prize: " <<  maxPrize << endl;
-            cout << "minimum buffer taken: " << minMove << endl;
-
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<milliseconds>(stop - start);
 
-            cout << "\nExecution Time: " << duration.count() << " milliseconds" << endl;
-            saving(duration.count());
+            // result 
+            isFound(duration);
         }
 
         else if(input == 2){
@@ -327,10 +393,10 @@ int main(){
             fstream myData;
             
             cout << "Pastikan file ada di dalam folder test" << endl;
+            cout << "tambahkan ekstensi file\ncontoh: data.txt\n";
             cout << "Masukkan nama file: "; 
             cin >> fileName; 
             filePath += fileName; 
-            cout << filePath << endl;
             while(!isExist(filePath)){
                 cout << "file tidak ada di folder test" << endl; 
                 cout << "Masukkan nama file: "; 
@@ -338,6 +404,7 @@ int main(){
                 filePath = "test/"; 
                 filePath += fileName;
             }
+            cout << "\n\nMemproses file "  << fileName << endl;
 
             myData.open(filePath); 
             if(myData.is_open()){
@@ -398,7 +465,6 @@ int main(){
                 rewardSequence.push_back(tempReward);
             }
             
-       
             // main execution  
             auto start = high_resolution_clock::now();
             vector<string> currentPos; 
@@ -406,25 +472,11 @@ int main(){
             for(int i = 0; i < colsMatriks; i++){
                 dfs(matriks, rewardSequence, path, currentPos, 0, i, 0, buffer, true);
             }
-            // result 
-            cout << "Result" << endl;
-            // cout << "finale path: " << finalePath.size() << endl;
-            for(int i = 0; i < finalePath.size(); i++){
-                cout << finalePath[i].finalToken << " "; 
-            }       
-            cout << endl;
-            for(int i = 0; i < finalePath.size(); i++){
-                cout << "(" << finalePath[i].col + 1 << "," << finalePath[i].row + 1 << ")" << endl;
-            }
-            cout << "Optimum reward: " << endl;
-            cout << "total prize: " <<  maxPrize << endl;
-            cout << "minimum buffer taken: " << minMove << endl;
-
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<milliseconds>(stop - start);
+            isFound(duration);
 
-            cout << "\nExecution Time: " << duration.count() << " milliseconds" << endl;
-            saving(duration.count());
+            // result 
         }
         else{
             break;
