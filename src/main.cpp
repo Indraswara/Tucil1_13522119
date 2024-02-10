@@ -6,6 +6,7 @@
 #include <random>
 #include <chrono>
 #include <fstream>
+#include <climits>
 
 using namespace std; 
 using namespace std::chrono;
@@ -55,6 +56,8 @@ int inputer(int awal, int akhir){
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin >> input;
+
+    return -1;
 }
 
 int inputInt(string msg){
@@ -70,7 +73,7 @@ string random_string(int length){
         const char charset[] =
         "0123456789"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const size_t max_index = (sizeof(charset) - 1);
+        const int max_index = (sizeof(charset) - 1);
         return charset[ rand() % max_index ];
     };
     string str(length,0);
@@ -218,7 +221,7 @@ void saving(auto duration){
     cout << "simpan hasil dalam bentuk file? (y/n) ";
     char choose; 
     cin >> choose;
-    while(choose != 'y' && choose && 'n' && choose != 'Y' && choose != 'N'){
+    while(choose != 'y' && choose != 'n' && choose != 'Y' && choose != 'N'){
         cout << "input invalid, masukkan ulang" << endl;
         cout << ">> "; 
         cin >> choose; 
@@ -308,13 +311,13 @@ int main(){
             cout << "\nExecution Time: " << duration.count() << " milliseconds" << endl;
             saving(duration.count());
         }
+
         else if(input == 2){
             vector<vector<string>> matriks;
             string line; 
             vector<string> lines;
             fstream myData;
-            myData.open("data3.txt"); 
-
+            myData.open("bin/data3.txt"); 
             if(myData.is_open()){
                 while(getline(myData, line)){
                     lines.push_back(line);
@@ -322,11 +325,9 @@ int main(){
 
             }
             myData.close();
-
-            buffer = stoi(lines[0]); 
+            buffer = stoi(lines[0]);
             rowsMatriks = lines[1][0] - '0';
             colsMatriks = lines[1][2] - '0';
-
             string myStr;
             vector<string> temp; 
 
@@ -338,13 +339,21 @@ int main(){
                         }
                         if(lines[i][j] == ' ' || j == lines[i].size() - 1){
                             temp.push_back(myStr);
+                            // cout << myStr << endl;
                             myStr.clear();
                         }
                 }
                 matriks.push_back(temp);
             }
+            for(int i = 0; i < rowsMatriks; i++){
+                for(int j = 0; j < colsMatriks; j++){
+                    cout << matriks[i][j] << " ";
+                }
+                cout << endl;
+            }
 
             jumlahSekuens = stoi(lines[rowsMatriks + 2]);
+
             vector<Reward> rewardSequence; 
             for(int f = rowsMatriks + 3; f < lines.size(); f++){
                 //ini reward
@@ -367,6 +376,14 @@ int main(){
                 tempReward.prize = stoi(lines[f]); 
                 rewardSequence.push_back(tempReward);
             }
+            // cout << rewardSequence[0].sequence.size() << endl;
+            // cout << matriks[0][0] << endl;
+            // for(int j = 0; j < rewardSequence[0].sequence.size(); j++){
+            //     cout << rewardSequence[0].sequence[j] << " ";
+            // }
+            // cout << endl;
+            // cout << rewardSequence[0].sequence[0] << endl;
+            // cout << rewardSequence[0].prize << endl;
 
             auto start = high_resolution_clock::now();
             // main execution  
