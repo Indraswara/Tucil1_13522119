@@ -12,7 +12,7 @@
 using namespace std; 
 using namespace std::chrono;
 
-int maxPrize = INT_MIN;
+int maxPrize = 0;
 int minMove = INT_MAX; 
 
 struct Path{
@@ -73,18 +73,9 @@ int inputInt(string msg){
     return input;
 }
 
-string randomString(int length){
-    auto randchar = []() -> char
-    {
-        const char charset[] =
-        "0123456789"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const int max_index = (sizeof(charset) - 1);
-        return charset[ rand() % max_index ];
-    };
-    string str(length,0);
-    generate_n( str.begin(), length, randchar );
-    return str;
+string randomToken(vector<string> tokens){
+    int index = 0 + (rand() % (tokens.size() - 1));
+    return tokens[index];
 }
 
 vector<vector<string>> board(int cols, int rows, vector<string> token){
@@ -93,22 +84,9 @@ vector<vector<string>> board(int cols, int rows, vector<string> token){
     for(int i = 0; i < rows; i++){
         vector<string> temp; 
         for(int j = 0; j < cols; j++){
-            temp.push_back(randomString(token[0].size()));
+            temp.push_back(randomToken(token));
         }
         board.push_back(temp);
-    }
-
-    // place token onto the matrix as a safe way; 
-    random_device rd; 
-    mt19937 gen(rd());
-    uniform_int_distribution<int> rowDis(0, rows - 1); 
-    uniform_int_distribution<int> colDis(0, cols - 1);
-
-    for(int i = 0; i < token.size(); i++){
-        int row = rowDis(gen); 
-        int col = colDis(gen);
-        //cout << row << " " << col << endl;
-        board[row][col] = token[i];
     }
     return board;
 }
@@ -145,6 +123,7 @@ void comparing(vector<string>& currentCombination, vector<Reward>& matrix, vecto
             if(point > maxPrize){
                 finalePath.clear();
                 maxPrize = point;
+                minMove = path.size();
                 // minMove = depth;
                 for(int i = 0; i < path.size(); i++){
                     finalePath.push_back({path[i].row, path[i].col, currentCombination[i]});
@@ -244,21 +223,21 @@ void saving(auto duration){
     }
 }
 
-void isFound(auto duration, vector<vector<string>> board){
-    if(maxPrize == INT_MIN){
+void isFound(auto duration, vector<vector<string>> board, vector<Reward> rewardSequence){
+    if(maxPrize < 0){
         maxPrize = 0;
     }
     if(minMove == INT_MAX){
         minMove = 0;
     }
     if(finalePath.size() != 0){
-            cout << " _______   ______    __    __  .__   __.  _______  " << endl
-        << "|   ____| /  __  \\  |  |  |  | |  \\ |  | |       \\ " << endl
-        << "|  |__   |  |  |  | |  |  |  | |   \\|  | |  .--.  |" << endl
-        << "|   __|  |  |  |  | |  |  |  | |  . `  | |  |  |  |" << endl
-        << "|  |     |  `--'  | |  `--'  | |  |\\   | |  '--'  |" << endl
-        << "|__|      \\______/   \\______/  |__| \\__| |_______/ " << endl;
-
+        cout<< " _______   ______    __    __  .__   __.  _______  " << endl
+            << "|   ____| /  __  \\  |  |  |  | |  \\ |  | |       \\ " << endl
+            << "|  |__   |  |  |  | |  |  |  | |   \\|  | |  .--.  |" << endl
+            << "|   __|  |  |  |  | |  |  |  | |  . `  | |  |  |  |" << endl
+            << "|  |     |  `--'  | |  `--'  | |  |\\   | |  '--'  |" << endl
+            << "|__|      \\______/   \\______/  |__| \\__| |_______/ " << endl;
+            cout << endl;
         cout << "Result" << endl;
         cout << "Matriks: " << endl;
         for(int i = 0; i < board.size(); i++){
@@ -267,6 +246,14 @@ void isFound(auto duration, vector<vector<string>> board){
             }
             cout << endl;
         }
+        cout << "Reward Sequence: " << endl;
+        for(int i = 0; i < rewardSequence.size(); i++){
+            for(int j = 0; j < rewardSequence[i].sequence.size(); j++){
+                cout << rewardSequence[i].sequence[j] << " ";
+            }
+            cout << "(" << rewardSequence[i].prize << ")" << endl;
+        }
+        cout << "Token combination: ";
         for(int i = 0; i < finalePath.size(); i++){
             cout << finalePath[i].finalToken << " "; 
         }       
@@ -289,9 +276,7 @@ void isFound(auto duration, vector<vector<string>> board){
     cout  << "minimum buffer taken: " << minMove << endl;
 
     cout << "\nExecution Time: " << duration.count() << " milliseconds" << endl;
-    if(!finalePath.empty()){
-        saving(duration.count());
-    }
+    saving(duration.count());
 }
 
 int main(){
@@ -333,6 +318,8 @@ int main(){
             colsMatriks = inputInt("Masukkan jumlah kolom matriks: "); 
             jumlahSekuens = inputInt("Masukkan total sekuens: "); 
             maksSekuens = inputInt("Masukkan jumlah maksimum sekuens: ");
+            cout << "Token harus kombinasi 1 angka 1 huruf, 2 angka, atau 2 huruf" << endl;
+            cout << "Contoh: A8, BG, 97" << endl;
             cout << "Masukkan token: ";
             for(int i = 0; i < jumlahTokenUnik; i++){
                 string seq; 
@@ -368,9 +355,8 @@ int main(){
             }
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<milliseconds>(stop - start);
-
             // result 
-            isFound(duration, boardGame);
+            isFound(duration, boardGame, rewardSequence);
         }
 
         else if(input == 2){
@@ -463,7 +449,7 @@ int main(){
             }
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<milliseconds>(stop - start);
-            isFound(duration, matriks);
+            isFound(duration, matriks, rewardSequence);
 
             // result 
         }

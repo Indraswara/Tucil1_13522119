@@ -19,10 +19,14 @@ Projek ini membuat suatu algoritma dengan pendekatan *brute force* untuk menyele
 
 ## Algoritma yang digunakan
 
-* pemain memasukkan input dari keyboard atau file 
-* melakukan pencarian kombinasi token pada matriks dengan maksimal token sebanyak buffer yang telah ditentukan 
-* pada setiap kombinasi token akan dicari kombinasi yang sesuai dengan sequence
-* Jika pada kombinasi token ditemukan kombinasi yang sama persis dengan sequence maka player akan mendapatkan reward sebanyak point yang merepresentasikan sequence tersebut
+- Misalkan ada sequence yang dibentuk dari token unik dan setiap sequence memiliki reward random. 
+contoh sequence 
+{{AB, CD, EF}, 20}
+{{87, G5, J8}, 30} 
+{{B8, AB, CD, EF}, 50}
+- Pada Matriks game akan ditelusuri semua jalurnya dengan maksimal token yang diambil dari matriks sebanyak buffer yang telah ditentukan yang ada.
+- Setiap token yang diambil dari matriks akan langsung di-compare dengan sequence yang memiliki reward. Jika kombinasi dari token ada yang sama dengan Sequence maka total prize akan bertambah sebanyak nilai dari reward sequence tersebut. 
+- Setiap kombinasi yang memiliki total reward yang sama, tetapi memiliki langkah yang lebih sedikit, maka kombinasi yang diambil adalah kombinasi yang memiliki langkah yang lebih sedikit sehingga solusinya menjadi lebih optimal
 
 ## Struktur Program 
 
@@ -80,14 +84,27 @@ make run
 
 # Alternatif Menjalankan Program
 alternatif menjalankan program pada *root directory*
-## *windows*
+
+## *Compile & Run*
+
+### *windows*
 jalankan perintah 
 ```
 g++ -std=c++20 -o bin/app src/main.cpp && bin\app
 ```
 
-## *WSL*
+### *WSL*
 jalankan perintah 
 ```
 g++ -std=c++20 -o ./bin/app ./src/main.cpp && ./bin/app
+```
+
+## *Run*
+### *Windows*
+```
+bin\app
+```
+### *WSL*
+```
+./bin/app
 ```
