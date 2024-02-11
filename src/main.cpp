@@ -73,7 +73,7 @@ int inputInt(string msg){
     return input;
 }
 
-string random_string(int length){
+string randomString(int length){
     auto randchar = []() -> char
     {
         const char charset[] =
@@ -93,7 +93,7 @@ vector<vector<string>> board(int cols, int rows, vector<string> token){
     for(int i = 0; i < rows; i++){
         vector<string> temp; 
         for(int j = 0; j < cols; j++){
-            temp.push_back(random_string(token[0].size()));
+            temp.push_back(randomString(token[0].size()));
         }
         board.push_back(temp);
     }
@@ -169,6 +169,7 @@ void dfs(vector<vector<string>>& board, vector<Reward> base, vector<Path> path, 
     if(prizeTotal == maxPrize){
         return;
     }
+
     if(curRow < 0 || curRow >= board.size() || curCol < 0 || curCol >= board[0].size()){
         return;
     }
@@ -243,7 +244,7 @@ void saving(auto duration){
     }
 }
 
-void isFound(auto duration){
+void isFound(auto duration, vector<vector<string>> board){
     if(maxPrize == INT_MIN){
         maxPrize = 0;
     }
@@ -259,6 +260,13 @@ void isFound(auto duration){
         << "|__|      \\______/   \\______/  |__| \\__| |_______/ " << endl;
 
         cout << "Result" << endl;
+        cout << "Matriks: " << endl;
+        for(int i = 0; i < board.size(); i++){
+            for(int j = 0; j < board[0].size(); j++){
+                cout << board[i][j] << " ";
+            }
+            cout << endl;
+        }
         for(int i = 0; i < finalePath.size(); i++){
             cout << finalePath[i].finalToken << " "; 
         }       
@@ -268,32 +276,13 @@ void isFound(auto duration){
         }
     }
     else{
-        cout << " _____   ______           _____   _________________                      " << endl
-        << "|\\    \\ |\\     \\     ____|\\    \\ /                 \\                     " << endl
-        << "\\ \\    \\| \\     \\   /     /\\    \\\\______     ______/                     " << endl
-        << " \\|    \\  \\     | /     /  \\    \\  \\( /    /  )/                        " << endl
-        << "  |     \\ |    ||     |    |    |  ' |   |   '                         " << endl
-        << "  |      \\|    ||\\     \\  /    /|   /   //                             " << endl
-        << "  |    |\\ \\    || \\_____\\/____/ |  /___//                              " << endl
-        << "  |____||\\_____/|  \\ |    ||    | / |`   |                              " << endl
-        << "  |    |/ \\|   ||   \\|____||____|/  |____|                              " << endl
-        << "    \\(       )/       \\(    )/       \\(                               " << endl
-        << "     '       '         '    '         '                               " << endl
-        << "                                                                        " << endl
-        << "                                                                        " << endl
-        << "  _____         _____     ____   ____  _____   ______        _____     " << endl
-        << " ____|\\    \\   ____|\\    \\   |    | |    ||\\    \\ |\\     \\   ___|\\    \\" << endl
-        << "|    | \\    \\ /     /\\    \\  |    | |    | \\ \\    \\| \\     \\ |    | \\    \\" <<endl
-        << "|    |______//     /  \\    \\ |    | |    |  \\|    \\  \\     ||    | |    |" << endl
-        << "|    |----'\\|     |    |    ||    | |    |   |     \\  |    ||    | |    |" << endl
-        << "|    |_____/|     |    |    ||    | |    |   |      \\ |    ||    | |    |" << endl
-        << "|    |      |\\     \\  /    /||    | |    |   |    |\\ \\|    ||    | |    |" << endl
-        << "|____|      | \\_____\\/____/ ||\\___\\_|____|   |____||\\_____/||____|/____/|" << endl
-        << "|    |       \\ |    ||    | /| |    |    |   |    |/ \\|   |||    /    | |" << endl
-        << "|____|        \\|____||____|/  \\|____|____|   |____|   |___|/|____|____|/ " << endl
-        << "  )/             \\(    )/        \\(   )/       \\(       )/    \\(    )/   " << endl
-        << "  '               '    '          '   '         '       '      '    '    " << endl;
-
+        cout << endl;
+        cout << "##    ##  #######  ########    ########  #######  ##     ## ##    ## ########" << endl;
+        cout << "###   ## ##     ##    ##       ##       ##     ## ##     ## ###   ## ##     ##" << endl;
+        cout << "## ## ## ##     ##    ##       ######   ##     ## ##     ## ## ## ## ##     ##" << endl;
+        cout << "##  #### ##     ##    ##       ##       ##     ## ##     ## ##  #### ##     ##" << endl;
+        cout << "##    ##  #######     ##       ##        #######   #######  ##    ## ########" << endl;
+        cout << endl;
     }
     cout << "Optimum reward: " << endl;
     cout << "total prize: " <<  maxPrize << endl;
@@ -381,7 +370,7 @@ int main(){
             auto duration = duration_cast<milliseconds>(stop - start);
 
             // result 
-            isFound(duration);
+            isFound(duration, boardGame);
         }
 
         else if(input == 2){
@@ -474,7 +463,7 @@ int main(){
             }
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<milliseconds>(stop - start);
-            isFound(duration);
+            isFound(duration, matriks);
 
             // result 
         }
