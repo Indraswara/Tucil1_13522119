@@ -67,10 +67,29 @@ int inputer(int awal, int akhir){
 }
 
 int inputInt(string msg){
-    int input;
-    cout << msg; 
-    cin >> input; 
-    return input;
+    string input; 
+    while (true) {
+        cout << msg;
+        cin >> input;
+        try {
+            int number = stoi(input);
+
+            if(number >= 0){
+                return number;
+            } 
+            else{
+                cout << "Input invalid, masukkan ulang" << endl;
+            }
+        } 
+        catch (invalid_argument const &e) {
+            cout << "Invalid input, masukkan ulang dengan angka" << endl;
+        }
+    }
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin >> input;
+
+    return -1;
 }
 
 string randomToken(vector<string> tokens){
@@ -323,7 +342,16 @@ int main(){
             cout << "Masukkan token: ";
             for(int i = 0; i < jumlahTokenUnik; i++){
                 string seq; 
-                cin >> seq; 
+                while(true){
+                    cin >> seq; 
+                    if(seq.size() != 2){
+                        cout << "Panjang token tidak sama dengan 2" << endl;
+                        cout << "Masukkan token ulang: ";
+                    }
+                    else{
+                        break;
+                    }
+                }
                 token.push_back(seq);
             }
 
@@ -360,6 +388,7 @@ int main(){
         }
 
         else if(input == 2){
+            bool isValid = 1;
             vector<vector<string>> matriks;
             string line; 
             string filePath = "test/";
@@ -386,70 +415,132 @@ int main(){
                 while(getline(myData, line)){
                     lines.push_back(line);
                 }
-
             }
             myData.close();
-            buffer = stoi(lines[0]);
-            rowsMatriks = lines[1][0] - '0';
-            colsMatriks = lines[1][2] - '0';
-            string myStr;
-            vector<string> temp; 
-
-            for(int i = 2; i <= rowsMatriks + 1; i++){
-                temp.clear();
-                for(int j = 0; j < lines[i].size(); j++){
-                        if(lines[i][j] != ' '){
-                            myStr.push_back(lines[i][j]);
-                            if(myStr.back() == '\r'){
-                                myStr.pop_back();
-                            }
-                        }
-                        if(lines[i][j] == ' ' || j == lines[i].size() - 1){
-                            temp.push_back(myStr);
-                            // cout << myStr << endl;
-                            myStr.clear();
-                        }
-                }
-                matriks.push_back(temp);
+            try{
+                buffer = stoi(lines[0]);
+            }catch(const invalid_argument& e){
+                cerr << "file tidak sesuai format: buffer bukanlah angka";
+                isValid = 0;
             }
 
-            jumlahSekuens = stoi(lines[rowsMatriks + 2]);
-
-            vector<Reward> rewardSequence; 
-            for(int f = rowsMatriks + 3; f < lines.size(); f++){
-                //ini reward
-                Reward tempReward; 
-                temp.clear();
-                //ini sequence
-                for(int j = 0; j < lines[f].size(); j++){
-                    if(lines[f][j] != ' '){
-                        myStr.push_back(lines[f][j]);
-                        if(myStr.back() == '\r'){
-                            myStr.pop_back();
-                        }
-                    }
-                    if(lines[f][j] == ' ' || j == lines[f].size() - 1){
-                        temp.push_back(myStr);
-                        myStr.clear();
-                    }
-                }
-                tempReward.sequence = temp;
-
-                f += 1; 
-                tempReward.prize = stoi(lines[f]); 
-                rewardSequence.push_back(tempReward);
+            try{
+                rowsMatriks = lines[1][0] - '0';
+            }catch(const invalid_argument& e){
+                cerr << "file tidak sesuai format: rowsMatriks bukanlah angka";
+                isValid = 0;
             }
             
-            // main execution  
-            auto start = high_resolution_clock::now();
-            vector<string> currentPos; 
-            vector<Path> path;
-            for(int i = 0; i < colsMatriks; i++){
-                dfs(matriks, rewardSequence, path, currentPos, 0, i, 0, buffer, true);
+            try{
+                colsMatriks = lines[1][2] - '0';
+            }catch(const invalid_argument& e){
+                cerr << "file tidak sesuai format: colsMatriks bukanlah angka";
+                isValid = 0;
             }
-            auto stop = high_resolution_clock::now();
-            auto duration = duration_cast<milliseconds>(stop - start);
-            isFound(duration, matriks, rewardSequence);
+
+            string myStr;
+            vector<string> temp; 
+            
+            if(isValid){
+                for(int i = 2; i <= rowsMatriks + 1; i++){
+                    if(isValid){
+                        temp.clear();
+                        for(int j = 0; j < lines[i].size(); j++){
+                            if(isValid){
+                                if(lines[i][j] != ' '){
+                                    myStr.push_back(lines[i][j]);
+                                    if(myStr.back() == '\r'){
+                                        myStr.pop_back();
+                                    }
+                                }
+                                if(lines[i][j] == ' ' || j == lines[i].size() - 1){
+                                    if(myStr.size() != 2){
+                                        isValid = 0;
+                                        cout << "file tidak sesuai format: token matriks tidak sesuai" << endl;
+                                    }
+                                    temp.push_back(myStr);
+                                    // cout << myStr << endl;
+                                    myStr.clear();
+                                }
+                            }
+                            
+                        }
+                        matriks.push_back(temp);
+                        if(matriks[i-2].size() != colsMatriks){
+                            cout << "file tidak sesuai format: jumlah kolom tidak sesuai dengan input" << endl;
+                            isValid = 0;
+                        }
+                    }
+                }
+            }
+            
+            try{
+                jumlahSekuens = stoi(lines[rowsMatriks + 2]);
+            }catch(const invalid_argument& e){
+                cerr << "file tidak sesuai format: jumlah sekuens bukanlah angka";
+                isValid = 0;
+            }
+
+            vector<Reward> rewardSequence; 
+            if(isValid){
+                for(int f = rowsMatriks + 3; f < lines.size(); f++){
+                    Reward tempReward; 
+                    //ini reward
+                    if(isValid){
+                        temp.clear();
+                        //ini sequence
+                        for(int j = 0; j < lines[f].size(); j++){
+                            if(lines[f][j] != ' '){
+                                myStr.push_back(lines[f][j]);
+                                if(myStr.back() == '\r'){
+                                    myStr.pop_back();
+                                }
+                            }
+                            if(lines[f][j] == ' ' || j == lines[f].size() - 1){
+                                if(myStr.size() != 2){
+                                    cout << "file tidak sesuai format: sequence token tidak berjumlah 2" << endl;
+                                    isValid = 0;
+                                }
+                                temp.push_back(myStr);
+                                myStr.clear();
+                            }
+                        }
+                        tempReward.sequence = temp;
+
+                        f += 1; 
+                        try{
+                            tempReward.prize = stoi(lines[f]); 
+                        }
+                        catch(const invalid_argument& e){
+                            cerr << "file tidak sesuai format: baris matriks tidak sesuai dengan input" << endl;
+                            cerr << "file tidak sesuai format: reward sequence bukanlah angka" << endl;
+                            isValid = 0;
+                        }
+                        rewardSequence.push_back(tempReward);
+                    }
+                }
+            }
+            
+            if(rewardSequence.size() != jumlahSekuens && isValid){
+                cout << "file tidak sesuai format: jumlah sekuens tidak sesuai" << endl;
+                isValid = 0;
+            }
+            
+            if(isValid){
+                // main execution  
+                auto start = high_resolution_clock::now();
+                vector<string> currentPos; 
+                vector<Path> path;
+                for(int i = 0; i < colsMatriks; i++){
+                    dfs(matriks, rewardSequence, path, currentPos, 0, i, 0, buffer, true);
+                }
+                auto stop = high_resolution_clock::now();
+                auto duration = duration_cast<milliseconds>(stop - start);
+                isFound(duration, matriks, rewardSequence);
+
+            }else{
+                cout << "cek kesalahan satu per satu" << endl;
+            }
 
             // result 
         }
