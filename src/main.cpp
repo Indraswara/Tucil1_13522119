@@ -325,7 +325,6 @@ int main(){
 
         int jumlahTokenUnik, buffer, rowsMatriks, colsMatriks, jumlahSekuens, maksSekuens; 
         vector<string> token; 
-        
         cout << "1. cli" << endl; 
         cout << "2. file" << endl; 
         cout << "3. quit" << endl; 
@@ -539,7 +538,7 @@ int main(){
                 isFound(duration, matriks, rewardSequence);
 
             }else{
-                cout << "cek kesalahan satu per satu" << endl;
+                cout << "\ncek kesalahan satu per satu" << endl;
             }
 
             // result 
