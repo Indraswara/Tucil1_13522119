@@ -422,24 +422,47 @@ int main(){
                 cerr << "file tidak sesuai format: buffer bukanlah angka";
                 isValid = 0;
             }
+            string tempString; 
+            int lengthBreak;
+            for(int i = 0; i < lines[1].size(); i++){
+                if(lines[1][i] == ' '){
+                    lengthBreak = i;
+                    break;
+                }
+                tempString += (lines[1][i]);
+            }
 
             try{
-                rowsMatriks = lines[1][0] - '0';
+                rowsMatriks = stoi(tempString);
             }catch(const invalid_argument& e){
-                cerr << "file tidak sesuai format: rowsMatriks bukanlah angka";
+                cerr << "file tidak sesuai format: rowsMatriks bukanlah angka\n";
+                isValid = 0;
+            }
+            tempString.clear(); 
+            for(int i = lengthBreak + 1; i < lines[1].size(); i++){
+                if(lines[1][i] == ' ' || lines[1][i] == '\r'){
+                    break;
+                }
+                tempString += (lines[1][i]);
+            }
+
+
+            
+            try{
+                colsMatriks = stoi(tempString);
+                tempString.clear();
+            }catch(const invalid_argument& e){
+                cerr << "file tidak sesuai format: colsMatriks bukanlah angka\n";
                 isValid = 0;
             }
             
-            try{
-                colsMatriks = lines[1][2] - '0';
-            }catch(const invalid_argument& e){
-                cerr << "file tidak sesuai format: colsMatriks bukanlah angka";
-                isValid = 0;
-            }
-
             string myStr;
             vector<string> temp; 
-            
+            if(rowsMatriks > lines.size()){
+                cout << "file tidak sesuai format: rowMatriks terlalu banyak\n";
+                isValid = 0;
+            }
+
             if(isValid){
                 for(int i = 2; i <= rowsMatriks + 1; i++){
                     if(isValid){
@@ -456,9 +479,9 @@ int main(){
                                     if(myStr.size() != 2){
                                         isValid = 0;
                                         cout << "file tidak sesuai format: token matriks tidak sesuai" << endl;
+                                        break;
                                     }
                                     temp.push_back(myStr);
-                                    // cout << myStr << endl;
                                     myStr.clear();
                                 }
                             }
@@ -468,16 +491,19 @@ int main(){
                         if(matriks[i-2].size() != colsMatriks){
                             cout << "file tidak sesuai format: jumlah kolom tidak sesuai dengan input" << endl;
                             isValid = 0;
+                            break;
                         }
                     }
                 }
             }
             
-            try{
-                jumlahSekuens = stoi(lines[rowsMatriks + 2]);
-            }catch(const invalid_argument& e){
-                cerr << "file tidak sesuai format: jumlah sekuens bukanlah angka";
-                isValid = 0;
+            if(isValid){
+                try{
+                    jumlahSekuens = stoi(lines[rowsMatriks + 2]);
+                }catch(const invalid_argument& e){
+                    cerr << "file tidak sesuai format: jumlah sekuens bukanlah angka";
+                    isValid = 0;
+                }
             }
 
             vector<Reward> rewardSequence; 
