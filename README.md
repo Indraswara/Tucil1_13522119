@@ -35,16 +35,39 @@ contoh sequence
 | README.md
 |___
 |   bin
-| 
+|   | app (wsl)
+|   | app.exe (windows)
 |___
 |   doc
-|
-|
+|   |--Tucil1_13522119_K1_Indraswara Galih Jayanegara.docx
+|   |--Tucil1_13522119_K1_Indraswara Galih Jayanegara.pdf
+|   |--Tucil1-2024
 |___
 |   src
 |      |-- main.cpp
 |___
 |   test
+|   |-- data.txt
+|   |-- data2.txt
+|   |-- data3.txt
+|   |-- data4.txt
+|   |-- data5.txt
+|   |-- data6.txt
+|   |-- data7.txt
+|   |-- result.txt
+|   |-- result2.txt
+|   |-- result3.txt
+|   |-- result4.txt
+|   |-- result5.txt
+|   |-- result6.txt
+|   |-- result7.txt
+|   |-- resultk1.txt
+|   |-- resultk2.txt
+|   |-- resultk3.txt
+|   |-- resultk4.txt
+|   |-- resultk5.txt
+|   |-- resultk6.txt
+
 ```
 
 
