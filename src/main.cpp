@@ -446,8 +446,6 @@ int main(){
                 tempString += (lines[1][i]);
             }
 
-
-            
             try{
                 colsMatriks = stoi(tempString);
                 tempString.clear();
