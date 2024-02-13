@@ -1,7 +1,7 @@
 # Tugas Kecil 1 Strategi Algoritma 
 
 ## Daftar Isi 
-- [Tugas kecil1 Strategi Algoritma] (#tugas-kecil1-straregi-algoritma)
+- [Tugas kecil1 Strategi Algoritma](#tugas-kecil1-straregi-algoritma)
     - [Daftar isi](#daftar-isi)
     - [Breach Protocol Cyberpunk 2077](#breach-protocol-cyberpunk-2077)
     - [Deskripsi Permasalahan](#deskripsi-permasalahan)
